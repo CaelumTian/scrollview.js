@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="./css/style.css">
+	<link rel="stylesheet" href="./css/asset.css">
+</head>
+<body>
+	<div id="main">
+		<section data-index=1 class="page1"></section>
+		<section data-index=2 class="page2"></section>
+		<section data-index=3 class="page3"></section>
+	</div>
+</body>
+<script src="./js/jquery-1.11.2.js"></script>
+<script src="./js/scrollview.js"></script>
+<script>
+	jQuery(document).ready(function($) {
+		$("#main").scrollview({
+			sectionContainer: "section",
+		    responsiveFallback: 600,
+		    loop: true
+		})
+	});	
+</script>
+</html>
