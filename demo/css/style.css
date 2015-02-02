@@ -17,25 +17,13 @@ body{
 	overflow: hidden;
 }
 .page1{
-	position: absolute;
-	top: 0px;
-	left: 0px;
 	background-color: #45cd44;
-	-webkit-transform: translateY(0%);
 }
 .page2{
-	position: absolute;
-	top: 0px;
-	left: 0px;
 	background-color: #ff0000;
-	-webkit-transform: translateY(100%);
 }
 .page3{
-	position: absolute;
-	top: 0px;
-	left: 0px;
 	background-color: #66dfdd;
-	-webkit-transform: translateY(200%);
 }
 .scroll-pagination {
 	position: absolute;

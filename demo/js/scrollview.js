@@ -11,7 +11,7 @@
 		beforeMove: null, //页面切换前回调
 		afterMove: null, //页面切换后回调
 		loop: true, //当前页面为最后一个是，继续切换是否可以
-		swipeAnim:"cover",   //滚动动画效果
+		swipeAnim:"default",   //滚动动画效果
 		responsiveFallback: false, //是否当浏览器宽度为某一个指定值的时候，去除该插件效果，如果想实现这种效果，那么可以指定一个宽度值
 		direction: 'vertical' // 页面切换方向，可选值为 "vertical"垂直 和"horizontal"水平. 默认 "vertical" 
 	}
@@ -185,29 +185,53 @@
 			scrollToMove();
 			steps=2;
 		}
-		function scrollToMove(){
-			if(defaults.swipeAnim === "default"){
-
+		function onEnd(event){
+			if(movePrevent === true && stage !=2){
+				return false;
 			}else{
+				touchDown=false;  //移开
+				settings.direction === "horizontal" ? endPos=event.pageX:endPos=event.pageY;
+			}
+			if(settings.direction === "vertical"){
+
+			}
+		}
+		function scrollToMove(){
+			if(defaults.swipeAnim === "cover"){
+
+			}
+			else if(defaults.swipeAnim === "default"){
 				 //这里暂时制作一组垂直的
-				var pageHeight  = document.documentElement.clientHeight,
+				var	pageHeight  = document.documentElement.clientHeight,
 					comPos=endPos-startPos,
 					index = $(settings.sectionContainer + ".active").data("index"),
 					current = $(settings.sectionContainer + "[data-index='" + index + "']"), 
 					pre=$(settings.sectionContainer + "[data-index='" + (index - 1) + "']"),
 					next = $(settings.sectionContainer + "[data-index='" + (index + 1) + "']");
-				current.css({'z-index': 0});
 				if(settings.direction === "vertical" && endPos < startPos){
 					if(next.length === 0){
 						return false;    //不加入循环
 					}
-					var current_index=parseInt(next.data("index"))-1;   //计算下一个section距离顶部的translateY
-					next.css({
-	                    'z-index': 2,
-	                    'display': 'block',
-	                    '-webkit-transform': 'translateY('+ (pageHeight*current_index+comPos) +'px)'
-	                })
+					var current_index=parseInt(index)-1;
+					element.css({
+						"-webkit-transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"-webkit-transition": "all " + 0 + "ms ",
+						"transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"transition": "all " + 0 + "ms "
+					})
 				} //向下滑
+				else if(settings.direction === "vertical" && endPos >= startPos){
+					if(pre.length === 0){
+						return false;    //不加入循环
+					}
+					var current_index=parseInt(index)-1;
+					element.css({
+						"-webkit-transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"-webkit-transition": "all " + 0 + "ms ",
+						"transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"transition": "all " + 0 + "ms "
+					})
+				}
 			}
 		}
 		$(document).on("wheel mousewheel DOMMouseScroll", function(event) {
