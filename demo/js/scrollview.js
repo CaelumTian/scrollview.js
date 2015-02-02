@@ -11,6 +11,7 @@
 		beforeMove: null, //页面切换前回调
 		afterMove: null, //页面切换后回调
 		loop: true, //当前页面为最后一个是，继续切换是否可以
+		swipeAnim:"cover",   //滚动动画效果
 		responsiveFallback: false, //是否当浏览器宽度为某一个指定值的时候，去除该插件效果，如果想实现这种效果，那么可以指定一个宽度值
 		direction: 'vertical' // 页面切换方向，可选值为 "vertical"垂直 和"horizontal"水平. 默认 "vertical" 
 	}
@@ -20,10 +21,14 @@
 			sections = $(settings.sectionContainer), //页面容器
 			lastAnimation = 0, //初始化上次动画时间
 			quietPeriod = 500, //动画等待时间
-			total = sections.length; //总共页面数量
-		topPos = 0,
-		leftPos = 0, //导航条位置
-		paginationList = ""; //导航条<li>元素设置
+			total = sections.length, //总共页面数量
+			paginationList = "", //导航条<li>元素设置
+			movePrevent=false,	 //是否阻止触摸
+			touchDown=false,     //手指已经按下，去除transition过度效果
+			steps=NaN,		 //表示触摸到了第几步，解决onEnd重复
+			startPos=NaN,		 //触摸起始点
+			endPos=NaN,			 //触摸结束点
+			offset=NaN;		     //偏移距离
 		(function() {
 			if (settings.pagination) {
 				var array = [];
@@ -44,11 +49,6 @@
 					var posTop = ($pagination.height() / 2) * -1;
 					$pagination.css("marginTop", posTop);
 				}
-				$("ul.scroll-pagination").on("click", "a", function(event) {
-					event.preventDefault();
-					var page_index = $(this).data("index");
-					element.moveTo(page_index);
-				}) //绑定导航条跳转事件
 			} //导航条位置
 			if (window.location.hash != "" && window.location.hash != "#1") {
 
@@ -166,10 +166,69 @@
 			}
 			//此处加入监听函数，监听css3动画完成情况
 		}
+
+		//移动适配
+
+		function onStart(event){
+			if(movePrevent){
+				return false;
+			}
+			touchDown=true;   //按下
+			settings.direction === "horizontal" ? startPos=event.pageX:startPos=event.pageY;
+			steps=1;
+		}
+		function onMove(event){
+			if(movePrevent === true || touchDown === false){
+				return false;
+			}
+			settings.direction === "horizontal" ? endPos=event.pageX:endPos=event.pageY;
+			scrollToMove();
+			steps=2;
+		}
+		function scrollToMove(){
+			if(defaults.swipeAnim === "default"){
+
+			}else{
+				 //这里暂时制作一组垂直的
+				var pageHeight  = document.documentElement.clientHeight,
+					comPos=endPos-startPos,
+					index = $(settings.sectionContainer + ".active").data("index"),
+					current = $(settings.sectionContainer + "[data-index='" + index + "']"), 
+					pre=$(settings.sectionContainer + "[data-index='" + (index - 1) + "']"),
+					next = $(settings.sectionContainer + "[data-index='" + (index + 1) + "']");
+				current.css({'z-index': 0});
+				if(settings.direction === "vertical" && endPos < startPos){
+					if(next.length === 0){
+						return false;    //不加入循环
+					}
+					var current_index=parseInt(next.data("index"))-1;   //计算下一个section距离顶部的translateY
+					next.css({
+	                    'z-index': 2,
+	                    'display': 'block',
+	                    '-webkit-transform': 'translateY('+ (pageHeight*current_index+comPos) +'px)'
+	                })
+				} //向下滑
+			}
+		}
 		$(document).on("wheel mousewheel DOMMouseScroll", function(event) {
 			event.preventDefault();
 			var delta = event.originalEvent.wheelDelta || -event.originalEvent.detail * 40;
 			init_scroll(event, delta);
+		}).on("touchstart",function(event){
+			event.preventDefault();
+			onStart(event.originalEvent.changedTouches[0]);    //触摸这里需要看看，貌似有问题
+		}).on("touchmove",function(event){
+			event.preventDefault();
+			onMove(event.originalEvent.changedTouches[0]);
+		}).on("touchend",function(event){
+			event.preventDefault();
+			onEnd(event.originalEvent.changedTouches[0]);
 		})
+
+		$("ul.scroll-pagination").on("click", "a", function(event) {
+			event.preventDefault();
+			var page_index = $(this).data("index");
+			element.moveTo(page_index);
+		}) //绑定导航条跳转事件
 	}
 })(jQuery)
