@@ -183,16 +183,16 @@
 			}
 			settings.direction === "horizontal" ? endPos=event.pageX:endPos=event.pageY;
 			scrollToMove();
-			steps=2;
 		}
 		function onEnd(event){
-			if(movePrevent === true && stage !=2){
+			console.log(steps);
+			if(movePrevent === true && steps !=2){
 				return false;
 			}else{
 				touchDown=false;  //移开
 				settings.direction === "horizontal" ? endPos=event.pageX:endPos=event.pageY;
 			}
-			if(settings.direction === "vertical"){
+			if(settings.direction === "vertical" && steps === 2){
 				var comPos=endPos-startPos,
 					index = $(settings.sectionContainer + ".active").data("index");
 				if(Math.abs(comPos)<50){
@@ -210,6 +210,7 @@
 					}
 				}
 			}
+			steps=3;
 		}
 		function scrollToMove(){
 			if(defaults.swipeAnim === "cover"){
@@ -225,6 +226,7 @@
 					next = $(settings.sectionContainer + "[data-index='" + (index + 1) + "']");
 				if(settings.direction === "vertical" && endPos < startPos){
 					if(next.length === 0){
+						console.log("已经到达最后一个");
 						return false;    //不加入循环
 					}
 					var current_index=parseInt(index)-1;
@@ -235,7 +237,7 @@
 						"transition": "all " + 0 + "ms "
 					})
 				} //向下滑
-				else if(settings.direction === "vertical" && endPos >= startPos){
+				if(settings.direction === "vertical" && endPos >= startPos){
 					if(pre.length === 0){
 						return false;    //不加入循环
 					}
@@ -248,6 +250,7 @@
 					})
 				}
 			}
+			steps=2;
 		}
 		$(document).on("wheel mousewheel DOMMouseScroll", function(event) {
 			event.preventDefault();
