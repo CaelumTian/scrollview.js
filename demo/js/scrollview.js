@@ -193,7 +193,22 @@
 				settings.direction === "horizontal" ? endPos=event.pageX:endPos=event.pageY;
 			}
 			if(settings.direction === "vertical"){
-
+				var comPos=endPos-startPos,
+					index = $(settings.sectionContainer + ".active").data("index");
+				if(Math.abs(comPos)<50){
+					element.css({
+						"-webkit-transform": "translate3d(0," + (parseInt(index-1)*-100) + "%,0)",
+						"-webkit-transition": "all " + 500 + "ms ",
+						"transform": "translate3d(0," + (parseInt(index-1)*-100) + "%,0)",
+						"transition": "all " + 500 + "ms "
+					})   //完成归位
+				}else{
+					if(comPos<0){
+						element.moveDown(); //向下滑动
+					}else{
+						element.moveUp(); //向下滑动
+					}
+				}
 			}
 		}
 		function scrollToMove(){
