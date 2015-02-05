@@ -30,6 +30,15 @@
 			endPos=NaN,			 //触摸结束点
 			offset=NaN;		     //偏移距离
 		(function() {
+			if(settings.direction == "horizontal"){
+				for(var i=0;i<total;i++){
+					$(sections[i]).css({
+						"position":"absolute",
+						"top":"0px",
+						"left":i*100+"%"
+					})
+				}
+			}
 			if (settings.pagination) {
 				var array = [];
 				if ($('ul.scroll-pagination').length == 0) {
@@ -40,10 +49,15 @@
 				}
 				paginationList = array.join(""); //循环设置li
 				$('ul.scroll-pagination').html(paginationList);
-				if (settings.direction == 'horizontal') {
+				if (settings.direction === 'horizontal') {
 					var $pagination = $("body").find(".scroll-pagination");
 					var posLeft = ($pagination.width() / 2) * -1;
-					$pagination.css("marginLeft", posLeft);
+					$pagination.css({
+						"marginLeft":posLeft,
+						"top":(parseInt(sections.height())-30)+"px",
+						"left":"50%"
+					});
+					$pagination.find("li").css("float","left");
 				} else {
 					var $pagination = $("body").find(".scroll-pagination");
 					var posTop = ($pagination.height() / 2) * -1;
