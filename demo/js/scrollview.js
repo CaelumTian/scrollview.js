@@ -206,14 +206,14 @@
 				touchDown=false;  //移开
 				settings.direction === "horizontal" ? endPos=event.pageX:endPos=event.pageY;
 			}
-			if(settings.direction === "vertical" && steps === 2){
+			if(steps === 2){
 				var comPos=endPos-startPos,
 					index = $(settings.sectionContainer + ".active").data("index");
 				if(Math.abs(comPos)<50){
 					element.css({
-						"-webkit-transform": "translate3d(0," + (parseInt(index-1)*-100) + "%,0)",
+						"-webkit-transform": (settings.direction == 'vertical')?"translate3d(0," + (parseInt(index-1)*-100) + "%,0)":"translate3d(" + (parseInt(index-1)*-100) + "%,,0,0)",
 						"-webkit-transition": "all " + 500 + "ms ",
-						"transform": "translate3d(0," + (parseInt(index-1)*-100) + "%,0)",
+						"transform": (settings.direction == 'vertical')?"translate3d(0," + (parseInt(index-1)*-100) + "%,0)":"translate3d(" + (parseInt(index-1)*-100) + "%,0,0)",
 						"transition": "all " + 500 + "ms "
 					})   //完成归位
 				}else{
@@ -228,38 +228,38 @@
 		}
 		function scrollToMove(){
 			if(defaults.swipeAnim === "cover"){
-
+				//第二组翻页效果
 			}
 			else if(defaults.swipeAnim === "default"){
-				 //这里暂时制作一组垂直的
 				var	pageHeight  = document.documentElement.clientHeight,
+					pageWidth = document.documentElement.clientWidth
 					comPos=endPos-startPos,
 					index = $(settings.sectionContainer + ".active").data("index"),
 					current = $(settings.sectionContainer + "[data-index='" + index + "']"), 
 					pre=$(settings.sectionContainer + "[data-index='" + (index - 1) + "']"),
 					next = $(settings.sectionContainer + "[data-index='" + (index + 1) + "']");
-				if(settings.direction === "vertical" && endPos < startPos){
+				if(endPos < startPos){
 					if(next.length === 0){
 						console.log("已经到达最后一个");
 						return false;    //不加入循环
 					}
 					var current_index=parseInt(index)-1;
 					element.css({
-						"-webkit-transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"-webkit-transform": (settings.direction === 'vertical')?"translate3d(0," + (comPos-pageHeight*current_index) + "px,0)":"translate3d(" + (comPos-pageWidth*current_index) + "px,0,0)",
 						"-webkit-transition": "all " + 0 + "ms ",
-						"transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"transform": (settings.direction == 'vertical')?"translate3d(0," + (comPos-pageHeight*current_index) + "px,0)":"translate3d(" + (comPos-pageWidth*current_index) + "px,0,0)",
 						"transition": "all " + 0 + "ms "
 					})
 				} //向下滑
-				if(settings.direction === "vertical" && endPos >= startPos){
+				if(endPos >= startPos){
 					if(pre.length === 0){
-						return false;    //不加入循环
+						return false;
 					}
 					var current_index=parseInt(index)-1;
 					element.css({
-						"-webkit-transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"-webkit-transform": (settings.direction === 'vertical') ?"translate3d(0," + (comPos-pageHeight*current_index) + "px,0)":"translate3d(" + (comPos-pageWidth*current_index) + "px,0,0)",
 						"-webkit-transition": "all " + 0 + "ms ",
-						"transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"transform": (settings.direction === 'vertical')?"translate3d(0," + (comPos-pageHeight*current_index) + "px,0)":"translate3d(" + (comPos-pageWidth*current_index) + "px,0,0)",
 						"transition": "all " + 0 + "ms "
 					})
 				}
