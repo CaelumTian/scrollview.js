@@ -50,7 +50,7 @@ JS引用：
 	    afterMove: null,             //页面切换后回调
 	    loop: true,                  //当前页面为最后一个是，继续切换是否可以
 	    responsiveFallback: false,   //是否当浏览器宽度为某一个指定值的时候，去除该插件效果，如果想实现这种效果，那么可以指定一个宽度值
-	    direction : 'vertical'       // 页面切换方向，可选值为 "vertical"水平 和"horizontal"垂直. 默认 "vertical" 
+	    direction : 'vertical'       // 页面切换方向，可选值为 "vertical"垂直 和"horizontal"水平. 默认 "vertical" 
 	}
 ```
 
