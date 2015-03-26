@@ -30,6 +30,15 @@
 			endPos=NaN,			 //触摸结束点
 			offset=NaN;		     //偏移距离
 		(function() {
+			if(settings.direction == "horizontal"){
+				for(var i=0;i<total;i++){
+					$(sections[i]).css({
+						"position":"absolute",
+						"top":"0px",
+						"left":i*100+"%"
+					})
+				}
+			}
 			if (settings.pagination) {
 				var array = [];
 				if ($('ul.scroll-pagination').length == 0) {
@@ -40,10 +49,15 @@
 				}
 				paginationList = array.join(""); //循环设置li
 				$('ul.scroll-pagination').html(paginationList);
-				if (settings.direction == 'horizontal') {
+				if (settings.direction === 'horizontal') {
 					var $pagination = $("body").find(".scroll-pagination");
-					var posLeft = ($pagination.width() / 2) * -1;
-					$pagination.css("marginLeft", posLeft);
+					var posLeft = ($pagination.width() / 2) * -3;
+					$pagination.css({
+						"marginLeft":posLeft,
+						"top":(parseInt(sections.height())-30)+"px",
+						"left":"50%"
+					});
+					$pagination.find("li").css("float","left");
 				} else {
 					var $pagination = $("body").find(".scroll-pagination");
 					var posTop = ($pagination.height() / 2) * -1;
@@ -55,7 +69,7 @@
 
 			} else {
 				$(settings.sectionContainer + "[data-index='1']").addClass("active")
-				$("body").addClass("viewing-page-1")
+				$("body").addClass("current-page-1")
 				if (settings.pagination == true) {
 					$(".scroll-pagination li a" + "[data-index='1']").addClass("active");
 				}
@@ -100,7 +114,7 @@
 				$(".scroll-pagination li a" + "[data-index='" + next.data("index") + "']").addClass("active");
 			}
 			$("body")[0].className = ""; //页面记录信息以备后用
-			$("body")[0].className = "viewing-page-" + next.data("index");
+			$("body")[0].className = "current-page-" + next.data("index");
 			if (settings.updateURL) {
 				var href = window.location.href.substr(0, window.location.href.indexOf('#')) + "#" + (index + 1);
 			} //连接处理，未完成......
@@ -128,7 +142,7 @@
 				$(".scroll-pagination li a" + "[data-index='" + next.data("index") + "']").addClass("active");
 			}
 			$("body")[0].className = ""; //页面记录信息以备后用
-			$("body")[0].className = "viewing-page-" + next.data("index");
+			$("body")[0].className = "current-page-" + next.data("index");
 			if (settings.updateURL) {
 				var href = window.location.href.substr(0, window.location.href.indexOf('#')) + "#" + (index + 1);
 			} //连接处理，未完成......
@@ -144,7 +158,7 @@
 				$(".scroll-pagination li a" + ".active").removeClass("active");
 				$(".scroll-pagination li a" + "[data-index='" + (page_index) + "']").addClass("active");
 				$("body")[0].className = "";
-				$("body")[0].className = "viewing-page-" + goPage.data("index");
+				$("body")[0].className = "current-page-" + goPage.data("index");
 				var pos = ((page_index - 1) * 100) * -1;
 				$(this).transformPage(settings, pos, page_index);
 			}
@@ -183,23 +197,23 @@
 			}
 			settings.direction === "horizontal" ? endPos=event.pageX:endPos=event.pageY;
 			scrollToMove();
-			steps=2;
 		}
 		function onEnd(event){
-			if(movePrevent === true && stage !=2){
+			console.log(steps);
+			if(movePrevent === true && steps !=2){
 				return false;
 			}else{
 				touchDown=false;  //移开
 				settings.direction === "horizontal" ? endPos=event.pageX:endPos=event.pageY;
 			}
-			if(settings.direction === "vertical"){
+			if(steps === 2){
 				var comPos=endPos-startPos,
 					index = $(settings.sectionContainer + ".active").data("index");
 				if(Math.abs(comPos)<50){
 					element.css({
-						"-webkit-transform": "translate3d(0," + (parseInt(index-1)*-100) + "%,0)",
+						"-webkit-transform": (settings.direction == 'vertical')?"translate3d(0," + (parseInt(index-1)*-100) + "%,0)":"translate3d(" + (parseInt(index-1)*-100) + "%,,0,0)",
 						"-webkit-transition": "all " + 500 + "ms ",
-						"transform": "translate3d(0," + (parseInt(index-1)*-100) + "%,0)",
+						"transform": (settings.direction == 'vertical')?"translate3d(0," + (parseInt(index-1)*-100) + "%,0)":"translate3d(" + (parseInt(index-1)*-100) + "%,0,0)",
 						"transition": "all " + 500 + "ms "
 					})   //完成归位
 				}else{
@@ -210,44 +224,47 @@
 					}
 				}
 			}
+			steps=3;
 		}
 		function scrollToMove(){
 			if(defaults.swipeAnim === "cover"){
-
+				//第二组翻页效果
 			}
 			else if(defaults.swipeAnim === "default"){
-				 //这里暂时制作一组垂直的
 				var	pageHeight  = document.documentElement.clientHeight,
+					pageWidth = document.documentElement.clientWidth
 					comPos=endPos-startPos,
 					index = $(settings.sectionContainer + ".active").data("index"),
 					current = $(settings.sectionContainer + "[data-index='" + index + "']"), 
 					pre=$(settings.sectionContainer + "[data-index='" + (index - 1) + "']"),
 					next = $(settings.sectionContainer + "[data-index='" + (index + 1) + "']");
-				if(settings.direction === "vertical" && endPos < startPos){
+				if(endPos < startPos){
 					if(next.length === 0){
+						console.log("已经到达最后一个");
 						return false;    //不加入循环
 					}
 					var current_index=parseInt(index)-1;
 					element.css({
-						"-webkit-transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"-webkit-transform": (settings.direction === 'vertical')?"translate3d(0," + (comPos-pageHeight*current_index) + "px,0)":"translate3d(" + (comPos-pageWidth*current_index) + "px,0,0)",
 						"-webkit-transition": "all " + 0 + "ms ",
-						"transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"transform": (settings.direction == 'vertical')?"translate3d(0," + (comPos-pageHeight*current_index) + "px,0)":"translate3d(" + (comPos-pageWidth*current_index) + "px,0,0)",
 						"transition": "all " + 0 + "ms "
 					})
 				} //向下滑
-				else if(settings.direction === "vertical" && endPos >= startPos){
+				if(endPos >= startPos){
 					if(pre.length === 0){
-						return false;    //不加入循环
+						return false;
 					}
 					var current_index=parseInt(index)-1;
 					element.css({
-						"-webkit-transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"-webkit-transform": (settings.direction === 'vertical') ?"translate3d(0," + (comPos-pageHeight*current_index) + "px,0)":"translate3d(" + (comPos-pageWidth*current_index) + "px,0,0)",
 						"-webkit-transition": "all " + 0 + "ms ",
-						"transform": "translate3d(0," + (comPos-pageHeight*current_index) + "px,0)",
+						"transform": (settings.direction === 'vertical')?"translate3d(0," + (comPos-pageHeight*current_index) + "px,0)":"translate3d(" + (comPos-pageWidth*current_index) + "px,0,0)",
 						"transition": "all " + 0 + "ms "
 					})
 				}
 			}
+			steps=2;
 		}
 		$(document).on("wheel mousewheel DOMMouseScroll", function(event) {
 			event.preventDefault();
