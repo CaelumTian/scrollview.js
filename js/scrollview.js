@@ -29,6 +29,7 @@
 			startPos=NaN,		 //触摸起始点
 			endPos=NaN,			 //触摸结束点
 			offset=NaN;		     //偏移距离
+		default.containerTag = $(this).attr("id");
 		(function() {
 			if(settings.direction == "horizontal"){
 				for(var i=0;i<total;i++){
@@ -279,6 +280,8 @@
 		}).on("touchend",function(event){
 			event.preventDefault();
 			onEnd(event.originalEvent.changedTouches[0]);
+		}).on("transitionend webkitTransitionEnd", "#" + default.containerTag, function(event) {
+			console.log("动画结束完毕");
 		})
 
 		$("ul.scroll-pagination").on("click", "a", function(event) {
